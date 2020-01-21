@@ -109,7 +109,7 @@ const char * wifi_sniffer_packet_type2str(wifi_promiscuous_pkt_type_t type)
 ////////////////////
 
 device devices[20];
-
+int devicecounter = 0;
 void setup() {
   Serial.begin(9600);
   delay(10);
@@ -189,7 +189,8 @@ void addDevice(uint8_t newDevice[6], unsigned sequence_number) {
         devices[freeIndex].addr[i] = newDevice[i];
         devices[freeIndex].time = millis();
       }
-      Serial.printf("ADD DEVICE=%02x:%02x:%02x:%02x:%02x:%02x\n", newDevice[0], newDevice[1], newDevice[2], newDevice[3], newDevice[4], newDevice[5]);
+      devicecounter++;
+      Serial.printf("Add device: %02x:%02x:%02x:%02x:%02x:%02x | Devices found: %d\n", newDevice[0], newDevice[1], newDevice[2], newDevice[3], newDevice[4], newDevice[5], devicecounter);
     }
   } else {
     devices[isSameAs].time = millis();
@@ -220,8 +221,9 @@ void checkDevices() {
   for (size_t i = 0; i < 20; i++)
   {
     if(devices[i].time != 0) {
-      if((millis() - devices[i].time) > 15000 && (devices[i].time != 0)) {
-        Serial.printf("Remove device: %02x:%02x:%02x:%02x:%02x:%02x | Index:%d\n", devices[i].addr[0], devices[i].addr[1], devices[i].addr[2], devices[i].addr[3], devices[i].addr[4], devices[i].addr[5], i);
+      if((millis() - devices[i].time) > 35000 && (devices[i].time != 0)) {
+        devicecounter--;
+        Serial.printf("Remove device: %02x:%02x:%02x:%02x:%02x:%02x | Devices found: %d\n", devices[i].addr[0], devices[i].addr[1], devices[i].addr[2], devices[i].addr[3], devices[i].addr[4], devices[i].addr[5], devicecounter);
         devices[i].time = 0;
         for (size_t j = 0; j < 6; j++) {
           devices[i].addr[j] = 0;
